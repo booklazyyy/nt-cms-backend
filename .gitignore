@@ -7,7 +7,6 @@
 /storage/pail
 /vendor
 /resources
-/routes/web.php
 /routes/auth.php
 .env
 .env.backup
