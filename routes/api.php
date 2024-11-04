@@ -4,7 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Api\{
-    LoginController,
+    AuthController,
     PostController,
     PostMetumController,
     BlockController,
@@ -20,7 +20,7 @@ Route::get('/user', function (Request $request) {
 
 Route::prefix('v1')->group(function () {
 
-    Route::post('/login', [LoginController::class, 'login']);
+    Route::post('/login', [AuthController::class, 'login']);
     
     Route::apiResource('posts', PostController::class);
     Route::apiResource('postmeta', PostMetumController::class);
