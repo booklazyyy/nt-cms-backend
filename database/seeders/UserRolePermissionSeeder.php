@@ -43,7 +43,7 @@ class UserRolePermissionSeeder extends Seeder
         $adminRole = Role::create(['name' => 'admin']);
         $staffRole = Role::create(['name' => 'staff']);
         $userRole = Role::create(['name' => 'user']);
-
+        
         // Lets give all permission to super-admin role.
         $allPermissionNames = Permission::pluck('name')->toArray();
 
@@ -86,7 +86,7 @@ class UserRolePermissionSeeder extends Seeder
                             'name' => 'Staff',
                             'email' => 'staff@gmail.com',
                             'password' => Hash::make('12345678'),
-                        ]);
+                        ]); 
 
         $staffUser->assignRole($staffRole);
     }
