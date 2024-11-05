@@ -20,7 +20,25 @@ Route::get('/user', function (Request $request) {
 
 Route::prefix('v1')->group(function () {
 
-    Route::post('/login', [AuthController::class, 'login']);
+    // Route::post('/login', [AuthController::class, 'login']);
+    
+    // Route::group([
+
+    //     'middleware' => 'api',
+    //     'namespace'  => 'App\Http\Controllers',
+    //     'prefix' => 'auth'
+    
+    // ], function ($router) {
+    Route::post('login', [AuthController::class, 'login']);
+    Route::group([
+        'middleware' => 'api',
+        'prefix' => 'auth'
+    ], function () {
+        Route::delete('logout', [AuthController::class, 'logout']);
+        Route::post('refresh', [AuthController::class, 'refresh']);
+        Route::get('me', [AuthController::class, 'me']);
+    });
+    // });
     
     Route::apiResource('posts', PostController::class);
     Route::apiResource('postmeta', PostMetumController::class);

@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('slug', 200)->nullable();
             $table->text('title');
             $table->text('excerpt')->nullable();
+            $table->longText('data_json')->nullable();
             $table->longText('content');
             $table->longText('custom_css')->nullable();
             $table->longText('custom_js')->nullable();

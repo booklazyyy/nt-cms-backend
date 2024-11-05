@@ -56,7 +56,7 @@ class Post extends Model
      *
      * @var array<int, string>
      */
-    protected $fillable = ['user_id', 'organization_id', 'type', 'parent_id', 'slug', 'title', 'excerpt', 'content', 'custom_css', 'custom_js', 'language', 'status', 'guid', 'menu_order', 'ordered', 'mime_type', 'published_at', 'published_by', 'created_by', 'updated_by', 'deleted_by'];
+    protected $fillable = ['user_id', 'organization_id', 'type', 'parent_id', 'slug', 'title', 'excerpt', 'data_json','content', 'custom_css', 'custom_js', 'language', 'status', 'guid', 'menu_order', 'ordered', 'mime_type', 'published_at', 'published_by', 'created_by', 'updated_by', 'deleted_by'];
 
 
     /**
@@ -107,12 +107,12 @@ class Post extends Model
     //     return $this->hasMany(\App\Models\Postmetum::class, 'id', 'post_id');
     // }
     
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function posts()
-    {
-        return $this->hasMany(\App\Models\Post::class, 'id', 'parent_id');
-    }
+    // /**
+    //  * @return \Illuminate\Database\Eloquent\Relations\HasMany
+    //  */
+    // public function posts()
+    // {
+    //     return $this->hasMany(\App\Models\Post::class, 'id', 'parent_id');
+    // }
     
 }
