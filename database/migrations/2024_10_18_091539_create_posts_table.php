@@ -27,7 +27,8 @@ return new class extends Migration
             $table->char('language', 2)->default('th');
             $table->enum('status', ['published', 'draft'])->default('draft');
             $table->string('password', 20)->nullable();
-            $table->string('guid')->unique();
+            // $table->string('guid')->unique();
+            $table->string('guid')->nullable();
             $table->integer('menu_order')->default(0);
             $table->integer('ordered')->default(0);
             $table->string('mime_type', 100)->nullable();

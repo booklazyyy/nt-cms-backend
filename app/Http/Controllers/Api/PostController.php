@@ -21,8 +21,8 @@ class PostController extends Controller
             $type = $request->string('type')->trim();
             // $posts = Post::where('type', $type)->paginate();
             // if ($request->has('orderBy')) {
-            $order_by = $request->string('orderBy')->trim();
-            $order = $request->string('order')->trim();
+            $order_by = $request->string('order_by', 'asc')->trim();
+            $order = $request->string('order', 'id')->trim();
             $posts = Post::where('type', $type)
                 ->orderBy($order_by, $order)
                 ->paginate();

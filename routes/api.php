@@ -13,6 +13,8 @@ use App\Http\Controllers\Api\{
     UserMetumController,
     TemplateController,
 };
+use App\Http\Middleware\JWTAuthMiddleware;
+use App\Http\Middleware\JWTRefreshMiddleware;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -30,17 +32,24 @@ Route::prefix('v1')->group(function () {
     
     // ], function ($router) {
     Route::post('login', [AuthController::class, 'login']);
-    Route::group([
-        'middleware' => 'api',
-        'prefix' => 'auth'
-    ], function () {
-        Route::delete('logout', [AuthController::class, 'logout']);
-        Route::post('refresh', [AuthController::class, 'refresh']);
-        Route::get('me', [AuthController::class, 'me']);
+
+    Route::middleware(JWTRefreshMiddleware::class)
+        ->post('refresh', [AuthController::class, 'refresh']);
+    
+    Route::middleware(JWTAuthMiddleware::class)->group(function () {
+        Route::prefix('auth')->group(function () {
+        
+            Route::delete('logout', [AuthController::class, 'logout']);
+            Route::get('me', [AuthController::class, 'me']);
+        });
+        Route::apiResource('posts', PostController::class);
+
     });
+    
+
+    // 
     // });
     
-    Route::apiResource('posts', PostController::class);
     Route::apiResource('postmeta', PostMetumController::class);
     Route::apiResource('blocks', BlockController::class);
     Route::apiResource('organizations', OrganizationController::class);
