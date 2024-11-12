@@ -5,6 +5,8 @@ namespace App\Http\Middleware;
 use Closure;
 use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
 use PHPOpenSourceSaver\JWTAuth\Exceptions\JWTException;
+use PHPOpenSourceSaver\JWTAuth\Exceptions\TokenExpiredException;
+
 
 
 class JWTAuthMiddleware
@@ -12,10 +14,10 @@ class JWTAuthMiddleware
     public function handle($request, Closure $next)
     {
         try {
-            config()->set('jwt.secret', env('JWT_ACCESS_SECRET'));
+            JWTAuth::getJWTProvider()->setSecret(env('JWT_ACCESS_SECRET'));
             $user = JWTAuth::parseToken()->authenticate();
         } catch (JWTException $e) {
-            return response()->json(['error' => 'Token not valid', 'message' => $e->getMessage()], 401);
+            throw new JWTException($e->getMessage(), 401);
         }
 
         return $next($request);

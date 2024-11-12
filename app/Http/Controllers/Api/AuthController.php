@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Config;
 use App\Models\User;
 use App\Http\Requests\LoginRequest;
@@ -15,10 +14,23 @@ use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
 use PHPOpenSourceSaver\JWTAuth\Exceptions\TokenBlacklistedException;
 use PHPOpenSourceSaver\JWTAuth\Exceptions\TokenExpiredException;
 use PHPOpenSourceSaver\JWTAuth\Exceptions\JWTException;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 
 
-class AuthController extends Controller
+class AuthController extends Controller implements HasMiddleware
 {
+
+    public static function middleware(): array
+    {
+        return [
+            // examples with aliases, pipe-separated names, guards, etc:
+            // 'role_or_permission:manager|edit articles',
+            // new Middleware('permission:delete role', only: ['me']),
+            // new Middleware(\Spatie\Permission\Middleware\RoleMiddleware::using('manager'), except: ['show']),
+            // new Middleware(\Spatie\Permission\Middleware\PermissionMiddleware::using('delete records,api'), only: ['destroy']),
+        ];
+    }
     /**
      * Get a JWT via given credentials.
      *
@@ -31,7 +43,7 @@ class AuthController extends Controller
         //     JWTAuth::invalidate();
         // }
         // JWTAuth::invalidate();
-        $date = new \DateTime();
+        // $date = new \DateTime();
         $creadentials = $request->only('email', 'password');
 
         try {
@@ -40,7 +52,11 @@ class AuthController extends Controller
             JWTAuth::getJWTProvider()->setSecret(env('JWT_ACCESS_SECRET'));
             $access_token = [];
             if (!$access_token['token'] = JWTAuth::attempt($creadentials)) {
-                return response()->json(['message' => 'Invalid credentials!'], 401);
+                return response()->json([
+                    'error' => 'Unauthorized',
+                    'message' => 'Invalid credentials!',
+                    'code' => 401
+                ], 401);
             }
             $access_token['expires_in'] = JWTAuth::factory()->getTTL() * 60;
             // $token_validity = (24 * 60);
@@ -61,7 +77,13 @@ class AuthController extends Controller
 
             return $this->respondWithToken($access_token, $refresh_token);
         } catch (JWTException $e) {
-            return response()->json(['error' => 'Could not create token', 'message' => $e->getMessage()], 500);
+            throw new JWTException($e->getMessage(), 401);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Could not create token',
+                'message' => $e->getMessage(),
+                'code' => 500
+            ], 500);
         }
         // return response()->json(['acc' => $con_acc, 'refre' => $con_refresh]);
 
@@ -80,23 +102,38 @@ class AuthController extends Controller
 
     public function me(Request $request)
     {
+        $user = JWTAuth::user();
+
+        // if ($user->can('delete role')) {
         try {
-            if (! $user = JWTAuth::user()) {
-                return response()->json(['error' => 'User not found'], 404);
+            if (! $user) {
+                return response()->json([
+                    'error' => 'Not Found',
+                    'message' => 'User not found',
+                    'code' => 404
+                ], 404);
             }
         } catch (JWTException $e) {
-            return response()->json(['error' => $e, 'message' => 'Invalid token'], 400);
+            throw new JWTException($e->getMessage(), 401);
         }
-        $user->roles = $user->getRoleNames();
-        // $cookie = $request->cookie('refresh_token');
-        return response()->json(['users' => $user, 'check' => JWTAuth::check()]);
+        // $user->roles = $user->getRoleNames();
+        $user->roles = $user->getPermissionsViaRoles();
+        return response()->json([
+            'status' => 'success',
+            'users' => $user,
+            'check' => JWTAuth::check()
+        ]);
+        // }
+
+        // return response()->json(['error' => 'user not access!']);
+
 
         // return response()->json(JWTAuth::user());
     }
 
     public function logout(Request $request)
     {
-        $refresh_token = $request->cookie('refresh_token');
+        $refresh_token = $request->input('refresh_token');
         // return response()->json(['message' => JWTAuth::user()]);
 
         JWTAuth::invalidate();
@@ -104,26 +141,25 @@ class AuthController extends Controller
         JWTAuth::setToken($refresh_token);
         JWTAuth::invalidate();
 
-        Cookie::forget('refresh_token');
-
-        return response()->json(['message' => 'Successfully logged out'])->withoutCookie('refresh_token');
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Successfully logged out'
+        ]);
     }
 
     public function refresh(Request $request)
     {
         try {
-
             JWTAuth::getJWTProvider()->setSecret(env('JWT_ACCESS_SECRET'));
 
             if (!JWTAuth::parseToken()->authenticate()) {
-                return response()->json("", 401);
+                throw new JWTException('Token not authenticated', 401);
             }
-
             // return response()->json(JWTAuth::getToken()->get());
 
             $newtoken = JWTAuth::refresh();
             return response()->json([
-                'success' => true,
+                'status' => 'success',
                 'access_token' => $newtoken
             ]);
         } catch (TokenExpiredException $e) {
@@ -131,7 +167,7 @@ class AuthController extends Controller
             try {
                 $newtoken = JWTAuth::refresh();
                 return response()->json([
-                    'success' => true,
+                    'status' => 'success',
                     'access_token' => $newtoken
                 ]);
             } catch (TokenExpiredException $e) {
@@ -148,16 +184,18 @@ class AuthController extends Controller
         } catch (\Exception $e) {
             return response()->json([], 400);
         }
-
     }
 
     protected function respondWithToken($access_token, $refresh_token)
     {
-        return response()->json([
+        $response = [
+            'status' => 'success',
             'token_type' => 'bearer',
             'access_token' => $access_token,
             'refresh_token' => $refresh_token,
             'user' => JWTAuth::user()
-        ], 200)->withCookie(cookie('refresh_token', $refresh_token['token'], config('jwt.refresh_ttl'), NULL, NULL, false, true));
+        ];
+        $response['user']['roles'] = JWTAuth::user()->getPermissionsViaRoles();
+        return response()->json($response, 200);
     }
 }

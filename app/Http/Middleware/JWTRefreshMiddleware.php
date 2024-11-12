@@ -18,10 +18,10 @@ class JWTRefreshMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $refresh_token = $request->cookie('refresh_token');
+        $refresh_token = $request->input('refresh_token');
         if (!$refresh_token) {
             return response()->json([
-                'error' => 'Refresh token not provided',
+                'error' => 'Refresh token not provided!',
             ], 400);
         }
         try {
@@ -29,9 +29,9 @@ class JWTRefreshMiddleware
             JWTAuth::getJWTProvider()->setSecret(env('JWT_REFRESH_SECRET'));
             JWTAuth::setToken($refresh_token)->authenticate();
         } catch (TokenExpiredException $e) {
-            return response()->json(['error' => $e->getMessage(), 'message' => 'Please Login!'], 401);
+            return response()->json(['error' => $e->getMessage(), 'message' => 'Please Login!', 'code' => 401], 401);
         } catch (JWTException $e) {
-            return response()->json(['error' => 'Invalid Token', 'message' => $e->getMessage()], 401);
+            throw new JWTException($e->getMessage(), 401);
         }
 
         return $next($request);

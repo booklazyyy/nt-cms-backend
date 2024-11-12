@@ -22,19 +22,19 @@ class PostRequest extends FormRequest
     public function rules(): array
     {
         return [
-			'user_id' => 'required',
-			'type' => 'required',
-			'slug' => 'string',
-			'title' => 'required|string',
-			'excerpt' => 'string',
-			'content' => 'required|string',
+            'user_id' => 'required',
+            'type' => 'required',
+            'slug' => 'string',
+            'title' => 'required|string',
+            'excerpt' => 'string',
+            'content' => 'required|string',
             'data_json' => 'required|string',
-			'language' => 'required',
-			'status' => 'required',
-			'guid' => 'required|string',
-			'menu_order' => 'required',
-			'ordered' => 'required',
-			'mime_type' => 'string',
+            'language' => 'required',
+            'status' => 'required',
+            'guid' => 'string',
+            'menu_order' => 'required',
+            'ordered' => 'required',
+            'mime_type' => 'string',
         ];
     }
 }
