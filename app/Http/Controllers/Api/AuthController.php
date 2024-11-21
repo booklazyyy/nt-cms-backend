@@ -4,20 +4,28 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Config;
-use App\Models\User;
+
+// form request
 use App\Http\Requests\LoginRequest;
-use Illuminate\Http\Response;
+use App\Http\Requests\RegisterRequest;
+use Illuminate\Support\Facades\Hash;
+
+use App\Models\User;
+use Spatie\Permission\Models\Role;
 use App\Http\Resources\UserResource;
 use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
+use Illuminate\Database\QueryException;
+use Illuminate\Validation\ValidationException;
 use PHPOpenSourceSaver\JWTAuth\Exceptions\TokenBlacklistedException;
 use PHPOpenSourceSaver\JWTAuth\Exceptions\TokenExpiredException;
 use PHPOpenSourceSaver\JWTAuth\Exceptions\JWTException;
 use Illuminate\Routing\Controllers\HasMiddleware;
-use Illuminate\Routing\Controllers\Middleware;
 
-
+/**
+ * @group Authenticate
+ *
+ * APIs for Authenticate
+ */
 class AuthController extends Controller implements HasMiddleware
 {
 
@@ -31,36 +39,31 @@ class AuthController extends Controller implements HasMiddleware
             // new Middleware(\Spatie\Permission\Middleware\PermissionMiddleware::using('delete records,api'), only: ['destroy']),
         ];
     }
+
     /**
+     * Sign in a user
+     * 
      * Get a JWT via given credentials.
-     *
+     * @unauthenticated
      * @return \Illuminate\Http\JsonResponse
      */
     public function login(LoginRequest $request)
     {
-        // if(JWTAuth::user()) {
-        //     return response()->json(['faile'=>])
-        //     JWTAuth::invalidate();
-        // }
-        // JWTAuth::invalidate();
-        // $date = new \DateTime();
-        $creadentials = $request->only('email', 'password');
 
         try {
+            $credentials = $request->only('email', 'password');
             // access token
             // set secert key for token
             JWTAuth::getJWTProvider()->setSecret(env('JWT_ACCESS_SECRET'));
             $access_token = [];
-            if (!$access_token['token'] = JWTAuth::attempt($creadentials)) {
+            if (!$access_token['token'] = JWTAuth::attempt($credentials)) {
                 return response()->json([
-                    'error' => 'Unauthorized',
+                    'error' => 'Unauthorize',
+                    'code' => 401,
                     'message' => 'Invalid credentials!',
-                    'code' => 401
                 ], 401);
             }
             $access_token['expires_in'] = JWTAuth::factory()->getTTL() * 60;
-            // $token_validity = (24 * 60);
-
             // refresh token
             // set secert key for token
             JWTAuth::getJWTProvider()->setSecret(env('JWT_REFRESH_SECRET'));
@@ -69,48 +72,99 @@ class AuthController extends Controller implements HasMiddleware
             JWTAuth::factory()->setTTL($token_validity);
 
             $refresh_token = [];
-            $refresh_token['token'] = JWTAuth::attempt($creadentials);
+            $refresh_token['token'] = JWTAuth::attempt($credentials);
             $refresh_token['expires_in'] = JWTAuth::factory()->getTTL() * 60;
-            // date('Y-m-d H:i:s')->modify();
-            // $refresh_token = JWTAuth::claims(['is_refresh' => true])->attempt($creadentials);
-            // $refresh_token = JWTAuth::fromUser(JWTAuth::user())->setSedcret(config('jwt.refresh_secret'));
 
             return $this->respondWithToken($access_token, $refresh_token);
         } catch (JWTException $e) {
             throw new JWTException($e->getMessage(), 401);
         } catch (\Exception $e) {
             return response()->json([
-                'error' => 'Could not create token',
+                'error' => 'Bad Request',
+                'code' => 400,
                 'message' => $e->getMessage(),
-                'code' => 500
+            ], 400);
+        }
+        // return response()->json(['acc' => $con_acc, 'refre' => $con_refresh]);
+
+    }
+    /**
+     * Create a new user
+     * 
+     * @unauthenticated
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function register(RegisterRequest $request)
+    {
+        // return response()->json($request->all());
+
+        try {
+            $user = User::create([
+                'name' => $request->input('name'),
+                'email' => $request->input('email'),
+                'password' => Hash::make($request->input('password')),
+            ]);
+
+            $user_role = Role::where('name', 'user')->first();
+            $admin_role = Role::where('name', 'admin')->first();
+            // $roles_assigned = [];
+
+            if ($user_role) {
+                $user->assignRole($user_role);
+            }
+            if ($admin_role) {
+                $user->assignRole($admin_role);
+            }
+
+            $roles = $user->roles->map(function ($role) {
+                return [
+                    'id' => $role->id,
+                    'name' => $role->name,
+                    'guard_name' => $role->guard_name,
+                    'permissions' => $role->permissions->pluck('name')->toArray(), // ดึงชื่อ permission เท่านั้น
+                ];
+            });
+
+            $responses = $user->only(['id', 'name', 'email', 'created_at', 'updated_at']);
+            $responses['roles'] = $roles;
+
+            // $responses->roles = $user_assigned_roles;
+
+            return response()->json($responses, 201);
+            // return $this->respondWithToken($access_token, $refresh_token);
+        } catch (QueryException $e) {
+            throw new QueryException(
+                $e->getConnectionName(),
+                $e->getSql(),
+                $e->getBindings(),
+                $e->getPrevious()
+            );
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Internal Server Error',
+                'code' => 500,
+                'message' => $e->getMessage(),
             ], 500);
         }
         // return response()->json(['acc' => $con_acc, 'refre' => $con_refresh]);
 
-
-        // Get the authenticated user.
-        // $user = JWTAuth::user();
-
-        // (optional) Attach the role to the token.
-        // $access_token = JWTJWTAuth::setToken($access_token)->claims(['role' => $user->role]);
-        // $token_validity = (24 * 60);
-
-        // JWTAuth::factory()->setTTL($token_validity);
-
-        // return new UserResource($this->respondWithToken($access_token));
     }
-
+    /**
+     * Get a user
+     *
+     * This endpoint lets you get a user.
+     */
     public function me(Request $request)
     {
         $user = JWTAuth::user();
 
         // if ($user->can('delete role')) {
         try {
-            if (! $user) {
+            if (!$user) {
                 return response()->json([
                     'error' => 'Not Found',
+                    'code' => 404,
                     'message' => 'User not found',
-                    'code' => 404
                 ], 404);
             }
         } catch (JWTException $e) {
@@ -118,6 +172,7 @@ class AuthController extends Controller implements HasMiddleware
         }
         // $user->roles = $user->getRoleNames();
         $user->roles = $user->getPermissionsViaRoles();
+
         return response()->json([
             'status' => 'success',
             'users' => $user,
@@ -130,7 +185,12 @@ class AuthController extends Controller implements HasMiddleware
 
         // return response()->json(JWTAuth::user());
     }
-
+    /**
+     * Sign out a user
+     *
+     * This endpoint lets you logout and destroy a token.
+     * @authenticated
+     */
     public function logout(Request $request)
     {
         $refresh_token = $request->input('refresh_token');
@@ -146,7 +206,13 @@ class AuthController extends Controller implements HasMiddleware
             'message' => 'Successfully logged out'
         ]);
     }
-
+    /**
+     * Refresh Token
+     * 
+     * Get a new JWT Token via given refresh token and old access token.
+     * @authenticated
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function refresh(Request $request)
     {
         try {
@@ -182,20 +248,41 @@ class AuthController extends Controller implements HasMiddleware
                 ], 401);
             }
         } catch (\Exception $e) {
-            return response()->json([], 400);
+            return response()->json([
+                'error' => 'Internal Server Error',
+                'code' => 500,
+                'message' => $e->getMessage(),
+            ], 500);
         }
     }
 
     protected function respondWithToken($access_token, $refresh_token)
     {
+        $user_id = JWTAuth::user()->id;
+        // $user = JWTAuth::user()->roles;
+        $user = User::find($user_id);
+        // $user = $user->roles;
+
+        $roles = $user->roles->map(function ($role) {
+            return [
+                'id' => $role->id,
+                'name' => $role->name,
+                'guard_name' => $role->guard_name,
+                'permissions' => $role->permissions->pluck('name')->toArray(), // ดึงชื่อ permission เท่านั้น
+            ];
+        });
+
         $response = [
             'status' => 'success',
             'token_type' => 'bearer',
             'access_token' => $access_token,
             'refresh_token' => $refresh_token,
-            'user' => JWTAuth::user()
+            'user' => $user->only(['id', 'name', 'email', 'created_at', 'updated_at'])
         ];
-        $response['user']['roles'] = JWTAuth::user()->getPermissionsViaRoles();
+        $response['user']['roles'] = $roles;
+        // $responses['user']['roles']['permissions'] = $user->roles;
+
+
         return response()->json($response, 200);
     }
 }

@@ -9,6 +9,11 @@ use Illuminate\Http\Response;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\BlockResource;
 
+/**
+ * @group Blocks
+ *
+ * APIs for Blocks
+ */
 class BlockController extends Controller
 {
     /**

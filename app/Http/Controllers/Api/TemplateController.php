@@ -9,6 +9,11 @@ use Illuminate\Http\Response;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\TemplateResource;
 
+/**
+ * @group Templates
+ *
+ * APIs for Templates
+ */
 class TemplateController extends Controller
 {
     /**

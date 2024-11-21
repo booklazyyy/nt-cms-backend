@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Class PostMetum
+ * Class PostMeta
  *
  * @property $id
  * @property $post_id
@@ -18,9 +18,9 @@ use Illuminate\Database\Eloquent\Model;
  * @package App
  * @mixin \Illuminate\Database\Eloquent\Builder
  */
-class PostMetum extends Model
+class PostMeta extends Model
 {
-    
+    protected $table = 'postmeta';
     protected $perPage = 20;
 
     /**
@@ -38,5 +38,4 @@ class PostMetum extends Model
     {
         return $this->belongsTo(\App\Models\Post::class, 'post_id', 'id');
     }
-    
 }

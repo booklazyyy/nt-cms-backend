@@ -1,0 +1,296 @@
+name: "Post Metadata"
+description: |-
+
+  APIs for Post Metadata
+endpoints:
+  - httpMethods:
+      - GET
+    uri: api/v1/postmeta
+    metadata:
+      groupName: "Post Metadata"
+      groupDescription: |-
+
+        APIs for Post Metadata
+      subgroup: ""
+      subgroupDescription: ""
+      title: "Display a listing of the resource."
+      description: ""
+      authenticated: true
+      custom: []
+    headers:
+      Authorization: "Bearer {YOUR_AUTH_KEY}"
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      - status: 200
+        content: '{"data":[],"links":{"first":"http:\/\/nt-cms-backend.test\/api\/v1\/postmeta?page=1","last":"http:\/\/nt-cms-backend.test\/api\/v1\/postmeta?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":null,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","active":false},{"url":"http:\/\/nt-cms-backend.test\/api\/v1\/postmeta?page=1","label":"1","active":true},{"url":null,"label":"Next &raquo;","active":false}],"path":"http:\/\/nt-cms-backend.test\/api\/v1\/postmeta","per_page":20,"to":null,"total":0}}'
+        headers:
+          cache-control: "no-cache, private"
+          content-type: application/json
+          vary: Origin
+        description: null
+        custom: []
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - "Bearer VkZ4g1cdD8v3eaP6hbfE5a6"
+    controller: null
+    method: null
+    route: null
+    custom: []
+  - httpMethods:
+      - POST
+    uri: api/v1/postmeta
+    metadata:
+      groupName: "Post Metadata"
+      groupDescription: |-
+
+        APIs for Post Metadata
+      subgroup: ""
+      subgroupDescription: ""
+      title: "Store a newly created resource in storage."
+      description: ""
+      authenticated: true
+      custom: []
+    headers:
+      Authorization: "Bearer {YOUR_AUTH_KEY}"
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      post_id:
+        name: post_id
+        description: ""
+        required: true
+        example: odit
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+      meta_key:
+        name: meta_key
+        description: ""
+        required: true
+        example: aut
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+      meta_value:
+        name: meta_value
+        description: ""
+        required: true
+        example: id
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+    cleanBodyParameters:
+      post_id: odit
+      meta_key: aut
+      meta_value: id
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - "Bearer V5E6eZaDg481vhc3Paf6bdk"
+    controller: null
+    method: null
+    route: null
+    custom: []
+  - httpMethods:
+      - GET
+    uri: "api/v1/postmeta/{id}"
+    metadata:
+      groupName: "Post Metadata"
+      groupDescription: |-
+
+        APIs for Post Metadata
+      subgroup: ""
+      subgroupDescription: ""
+      title: "Display the specified resource."
+      description: ""
+      authenticated: true
+      custom: []
+    headers:
+      Authorization: "Bearer {YOUR_AUTH_KEY}"
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        name: id
+        description: "The ID of the postmeta."
+        required: true
+        example: 8
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+    cleanUrlParameters:
+      id: 8
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      - status: 200
+        content: "[]"
+        headers:
+          cache-control: "no-cache, private"
+          content-type: application/json
+          vary: Origin
+        description: null
+        custom: []
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - "Bearer bVEfa56vheZa36cPgk1d84D"
+    controller: null
+    method: null
+    route: null
+    custom: []
+  - httpMethods:
+      - PUT
+      - PATCH
+    uri: "api/v1/postmeta/{id}"
+    metadata:
+      groupName: "Post Metadata"
+      groupDescription: |-
+
+        APIs for Post Metadata
+      subgroup: ""
+      subgroupDescription: ""
+      title: "Update the specified resource in storage."
+      description: ""
+      authenticated: true
+      custom: []
+    headers:
+      Authorization: "Bearer {YOUR_AUTH_KEY}"
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        name: id
+        description: "The ID of the postmeta."
+        required: true
+        example: 14
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+    cleanUrlParameters:
+      id: 14
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      post_id:
+        name: post_id
+        description: ""
+        required: true
+        example: quidem
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+      meta_key:
+        name: meta_key
+        description: ""
+        required: true
+        example: iure
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+      meta_value:
+        name: meta_value
+        description: ""
+        required: true
+        example: numquam
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+    cleanBodyParameters:
+      post_id: quidem
+      meta_key: iure
+      meta_value: numquam
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - "Bearer d5vcZheVf631aaE8Dgk6bP4"
+    controller: null
+    method: null
+    route: null
+    custom: []
+  - httpMethods:
+      - DELETE
+    uri: "api/v1/postmeta/{id}"
+    metadata:
+      groupName: "Post Metadata"
+      groupDescription: |-
+
+        APIs for Post Metadata
+      subgroup: ""
+      subgroupDescription: ""
+      title: ""
+      description: ""
+      authenticated: true
+      custom: []
+    headers:
+      Authorization: "Bearer {YOUR_AUTH_KEY}"
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        name: id
+        description: "The ID of the postmeta."
+        required: true
+        example: 14
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        custom: []
+    cleanUrlParameters:
+      id: 14
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - "Bearer b6hvaakg1cVP6d8feED354Z"
+    controller: null
+    method: null
+    route: null
+    custom: []

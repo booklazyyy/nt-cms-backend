@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class PostMetumRequest extends FormRequest
+class UserMetaRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,9 +22,9 @@ class PostMetumRequest extends FormRequest
     public function rules(): array
     {
         return [
-			'post_id' => 'required',
-			'meta_key' => 'required|string',
-			'meta_value' => 'required',
+            'user_id' => 'required',
+            'meta_key' => 'required|string',
+            'meta_value' => 'required',
         ];
     }
 }

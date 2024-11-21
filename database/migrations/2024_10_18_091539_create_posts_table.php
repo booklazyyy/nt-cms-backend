@@ -15,7 +15,7 @@ return new class extends Migration
             $table->increments('id');
             $table->unsignedInteger('user_id');
             $table->unsignedInteger('organization_id')->nullable();
-            $table->enum('type', ['post', 'page', 'attatchment'])->default('post');
+            $table->enum('type', ['post', 'page', 'attachment'])->default('post');
             $table->unsignedInteger('parent_id')->nullable();
             $table->string('slug', 200)->nullable();
             $table->text('title');

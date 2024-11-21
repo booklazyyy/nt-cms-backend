@@ -2,54 +2,59 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Models\UserMetum;
+use App\Models\UserMeta;
 use Illuminate\Http\Request;
-use App\Http\Requests\UserMetumRequest;
+use App\Http\Requests\UserMetaRequest;
 use Illuminate\Http\Response;
 use App\Http\Controllers\Controller;
-use App\Http\Resources\UserMetumResource;
+use App\Http\Resources\UserMetaResource;
 
-class UserMetumController extends Controller
+/**
+ * @group User meta data
+ *
+ * APIs for User meta data
+ */
+class UserMetaController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
-        $userMeta = UserMetum::paginate();
+        $userMeta = UserMeta::paginate();
 
-        return UserMetumResource::collection($userMeta);
+        return UserMetaResource::collection($userMeta);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(UserMetumRequest $request): UserMetum
+    public function store(UserMetaRequest $request): UserMeta
     {
-        return UserMetum::create($request->validated());
+        return UserMeta::create($request->validated());
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(UserMetum $userMetum): UserMetum
+    public function show(UserMeta $usermeta): UserMeta
     {
-        return $userMetum;
+        return $usermeta;
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UserMetumRequest $request, UserMetum $userMetum): UserMetum
+    public function update(UserMetaRequest $request, UserMeta $usermeta): UserMeta
     {
-        $userMetum->update($request->validated());
+        $usermeta->update($request->validated());
 
-        return $userMetum;
+        return $usermeta;
     }
 
-    public function destroy(UserMetum $userMetum): Response
+    public function destroy(UserMeta $usermeta): Response
     {
-        $userMetum->delete();
+        $usermeta->delete();
 
         return response()->noContent();
     }

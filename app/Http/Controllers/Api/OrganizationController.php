@@ -9,6 +9,11 @@ use Illuminate\Http\Response;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\OrganizationResource;
 
+/**
+ * @group Organizations
+ *
+ * APIs for Organization
+ */
 class OrganizationController extends Controller
 {
     /**

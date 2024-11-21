@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Class UserMetum
+ * Class UserMeta
  *
  * @property $id
  * @property $user_id
@@ -18,9 +18,9 @@ use Illuminate\Database\Eloquent\Model;
  * @package App
  * @mixin \Illuminate\Database\Eloquent\Builder
  */
-class UserMetum extends Model
+class UserMeta extends Model
 {
-    
+
     protected $perPage = 20;
 
     /**
@@ -38,5 +38,4 @@ class UserMetum extends Model
     {
         return $this->belongsTo(\App\Models\User::class, 'user_id', 'id');
     }
-    
 }

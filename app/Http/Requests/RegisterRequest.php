@@ -3,8 +3,11 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Validation\Rules\Password;
+use App\Http\Helpers\Helper;
 
-class UserMetumRequest extends FormRequest
+class RegisterRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,9 +25,14 @@ class UserMetumRequest extends FormRequest
     public function rules(): array
     {
         return [
-			'user_id' => 'required',
-			'meta_key' => 'required|string',
-			'meta_value' => 'required',
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'password' => ['required', Password::min(8), 'max:20', 'confirmed'],
         ];
+    }
+
+    public function failedValidation(Validator $validator)
+    {
+        Helper::sendError('Validation error', $validator->errors());
     }
 }

@@ -26,25 +26,32 @@ return Application::configure(basePath: dirname(__DIR__))
         // ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
+        $exceptions->renderable(function (\Illuminate\Database\QueryException  $e, $request) {
+            return response()->json([
+                'error' => 'Bad Request',
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ], 400);
+        });
         $exceptions->renderable(function (\PHPOpenSourceSaver\JWTAuth\Exceptions\TokenExpiredException $e, $request) {
             return response()->json([
                 'error' => 'Unauthorized',
-                'message' => $e->getMessage(),
                 'code' => $e->getCode(),
+                'message' => $e->getMessage(),
             ], $e->getCode());
         });
         $exceptions->renderable(function (\PHPOpenSourceSaver\JWTAuth\Exceptions\TokenBlacklistedException $e, $request) {
             return response()->json([
                 'error' => 'Unauthorized',
-                'message' => $e->getMessage(),
                 'code' => $e->getCode(),
+                'message' => $e->getMessage(),
             ], $e->getCode());
         });
         $exceptions->renderable(function (\PHPOpenSourceSaver\JWTAuth\Exceptions\JWTException $e, $request) {
             return response()->json([
                 'error' => 'Unauthorized',
-                'message' => $e->getMessage(),
                 'code' => $e->getCode(),
+                'message' => $e->getMessage(),
             ], $e->getCode());
         });
         $exceptions->renderable(function (\Spatie\Permission\Exceptions\UnauthorizedException $e, $request) {

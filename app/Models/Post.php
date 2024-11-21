@@ -40,7 +40,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property Post $post
  * @property User $user
  * @property User $user
- * @property Postmetum[] $postmetas
+ * @property PostMeta[] $postmetas
  * @property Post[] $posts
  * @package App
  * @mixin \Illuminate\Database\Eloquent\Builder
@@ -49,14 +49,14 @@ class Post extends Model
 {
     use SoftDeletes;
 
-    protected $perPage = 8;
+    protected $perPage = 5;
 
     /**
      * The attributes that are mass assignable.
      *
      * @var array<int, string>
      */
-    protected $fillable = ['user_id', 'organization_id', 'type', 'parent_id', 'slug', 'title', 'excerpt', 'data_json','content', 'custom_css', 'custom_js', 'language', 'status', 'guid', 'menu_order', 'ordered', 'mime_type', 'published_at', 'published_by', 'created_by', 'updated_by', 'deleted_by'];
+    protected $fillable = ['user_id', 'organization_id', 'type', 'parent_id', 'slug', 'title', 'excerpt', 'data_json', 'content', 'custom_css', 'custom_js', 'language', 'status', 'guid', 'menu_order', 'ordered', 'mime_type', 'published_at', 'published_by', 'created_by', 'updated_by', 'deleted_by'];
 
 
     /**
@@ -66,7 +66,7 @@ class Post extends Model
     {
         return $this->belongsTo(\App\Models\User::class, 'created_by', 'id');
     }
-    
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
@@ -74,7 +74,7 @@ class Post extends Model
     // {
     //     return $this->belongsTo(\App\Models\Organization::class, 'organization_id', 'id');
     // }
-    
+
     // /**
     //  * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
     //  */
@@ -82,7 +82,7 @@ class Post extends Model
     // {
     //     return $this->belongsTo(\App\Models\Post::class, 'parent_id', 'id');
     // }
-    
+
     // /**
     //  * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
     //  */
@@ -90,7 +90,7 @@ class Post extends Model
     // {
     //     return $this->belongsTo(\App\Models\User::class, 'updated_by', 'id');
     // }
-    
+
     // /**
     //  * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
     //  */
@@ -98,15 +98,15 @@ class Post extends Model
     // {
     //     return $this->belongsTo(\App\Models\User::class, 'user_id', 'id');
     // }
-    
+
     // /**
     //  * @return \Illuminate\Database\Eloquent\Relations\HasMany
     //  */
     // public function postmetas()
     // {
-    //     return $this->hasMany(\App\Models\Postmetum::class, 'id', 'post_id');
+    //     return $this->hasMany(\App\Models\PostMeta::class, 'id', 'post_id');
     // }
-    
+
     // /**
     //  * @return \Illuminate\Database\Eloquent\Relations\HasMany
     //  */
@@ -114,5 +114,5 @@ class Post extends Model
     // {
     //     return $this->hasMany(\App\Models\Post::class, 'id', 'parent_id');
     // }
-    
+
 }

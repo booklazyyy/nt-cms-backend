@@ -29,7 +29,7 @@ class JWTRefreshMiddleware
             JWTAuth::getJWTProvider()->setSecret(env('JWT_REFRESH_SECRET'));
             JWTAuth::setToken($refresh_token)->authenticate();
         } catch (TokenExpiredException $e) {
-            return response()->json(['error' => $e->getMessage(), 'message' => 'Please Login!', 'code' => 401], 401);
+            return response()->json(['error' => $e->getMessage(), 'code' => 401, 'message' => 'Please Login!'], 401);
         } catch (JWTException $e) {
             throw new JWTException($e->getMessage(), 401);
         }
